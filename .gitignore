@@ -1,0 +1,11 @@
+*/**/bin/*
+*/**/bin/*
+*/**/bin/release
+*/**/bin/x64/release
+*/**/bin/x86/release
+*/**/obj/*
+*/**/obj/*
+*/**/packages
+*/**/node_modules
+/.vs
+.dtbcachev2
