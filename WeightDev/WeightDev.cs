@@ -86,6 +86,7 @@ namespace WeightDev
         private int ExtLength { get; set; }
         public string ConnectionType { get; set; }
 
+        public  System.Net.Sockets.TcpClient IP { get; set; }
         public string IPAddress { get; set; }
         public string IPPort { get; set; }
         public int IPReadTimeOut { get; set; }

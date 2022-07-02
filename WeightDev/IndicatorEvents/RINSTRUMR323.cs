@@ -49,24 +49,33 @@ namespace WeightDev
                 case SerialData.Chars:
                     try
                     {
+                        //       0G
+                        //       0G
+
                         if (Started == false) return;
 
                         var signal = COMM.ReadLine();
 
+                        if (signal.Length != DataLength) return;
+
+                        SetSignalValue(signal);
+                        SetSignaLength(signal);
+                        //SetValue(signal);
+
                         var isNegative = false;
                         var filtered = signal.Replace("", "");
-                        filtered = filtered.Replace("KG", "");
+                        filtered = filtered.Replace("", "");
+                        filtered = filtered.Replace("K", "");
+                        filtered = filtered.Replace("G", "");
                         filtered = filtered.Replace("M", "");
+                        filtered = filtered.Replace("N", "");
+                        filtered = filtered.Replace(" ", "");
                         isNegative = filtered.Contains("-");
                         filtered = filtered.Replace("-", "");
 
                         int.TryParse(filtered,   out var intFilter);
-                        if (intFilter == 0)
-                        {
-                            System.Diagnostics.Debug.WriteLine("");
-                        }
                         if (isNegative) { intFilter = intFilter * (-1); }
-                        SetValue(intFilter.ToString());
+                        SetValue(filtered.ToString());
 
                     }
                     catch (Exception ex)

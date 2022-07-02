@@ -10,8 +10,8 @@ namespace WeightDev
 {
     public partial class WeightDevRepository
     {
-        #region RINSTRUMR323V3
-        private void COMM_RINSTRUMR323V3_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        #region RINSTRUMR323V4
+        private void COMM_RINSTRUMR323V4_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
             switch (e.EventType)
             {
@@ -28,13 +28,15 @@ namespace WeightDev
             }
         }
 
-        private void COMM_RINSTRUMR323V3_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private void COMM_RINSTRUMR323V4_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             switch (e.EventType)
             {
                 case SerialData.Chars:
                     try
                     {
+
+                        //       0KG
                         if (Started == false) return;
 
                         var signal = COMM.ReadLine();
@@ -42,17 +44,17 @@ namespace WeightDev
                         SetSignalValue(signal);
                         SetSignaLength(signal);
                         //SetValue(signal.ToString());
-             
-                        var filtered = signal.Replace("\u0003", "");
-                        filtered = filtered.Replace("\u0002","");
-                        filtered = filtered.Replace("GSI", "");
-                        filtered = filtered.Replace("GMI", "");
-                        int.TryParse(filtered,   out var intFilter);
-                        if (intFilter == 0)
-                        {
-                            System.Diagnostics.Debug.WriteLine("");
-                        }
-                       
+                        var isNegative = signal.Contains("-");
+                        var filtered = signal.Replace("", "");
+                        filtered = filtered.Replace("G", "");
+                        filtered = filtered.Replace("K", "");
+                        filtered = filtered.Replace("M", "");
+                        filtered = filtered.Replace("N", "");
+                        filtered = filtered.Replace(" ", "");
+
+                        var isNumeric = int.TryParse(filtered,   out int intFilter);
+                        if (!isNumeric) return;
+  
                         SetValue(intFilter.ToString());
                        
                         COMM.DiscardInBuffer();

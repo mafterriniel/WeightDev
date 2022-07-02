@@ -14,8 +14,10 @@ namespace WeightDev.Enums
         RINSTRUMR323,
         RINSTRUMR323V2,
         RINSTRUMR323V3,
+        RINSTRUMR323V4,
         TOLEDO,
-        ZM405V2
+        ZM201,
+        ZM405,
     }
 
 }

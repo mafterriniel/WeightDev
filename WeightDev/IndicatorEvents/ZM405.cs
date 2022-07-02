@@ -11,7 +11,7 @@ namespace WeightDev
    public  partial class WeightDevRepository
     {
         #region ZM405V2
-        private  void COMM_ZM405V2_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        private  void COMM_ZM405_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
             switch (e.EventType)
             {
@@ -28,7 +28,7 @@ namespace WeightDev
 
             }
         }
-        private void COMM_ZM405V2_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private void COMM_ZM405_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
     
             switch (e.EventType)

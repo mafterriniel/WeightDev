@@ -31,6 +31,7 @@
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.txtSignalLength = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.cboCType = new System.Windows.Forms.ComboBox();
             this.txtTimeOut = new System.Windows.Forms.TextBox();
@@ -59,7 +60,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.txtSignal = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.txtSignalLength = new System.Windows.Forms.TextBox();
             this.weightIndicator1 = new WeightDev.WeightIndicator();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -122,6 +122,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(421, 491);
             this.panel1.TabIndex = 18;
+            // 
+            // txtSignalLength
+            // 
+            this.txtSignalLength.Location = new System.Drawing.Point(223, 388);
+            this.txtSignalLength.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtSignalLength.Name = "txtSignalLength";
+            this.txtSignalLength.ReadOnly = true;
+            this.txtSignalLength.Size = new System.Drawing.Size(175, 22);
+            this.txtSignalLength.TabIndex = 41;
+            this.txtSignalLength.Text = "0";
             // 
             // label14
             // 
@@ -248,6 +258,7 @@
             "RINSTRUMR323",
             "RINSTRUMR323V2",
             "RINSTRUMR323V3",
+            "RINSTRUMR323V4",
             "ZM405V2"});
             this.cboDevice.Location = new System.Drawing.Point(232, 15);
             this.cboDevice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -317,7 +328,7 @@
             this.txtCommPort.Name = "txtCommPort";
             this.txtCommPort.Size = new System.Drawing.Size(175, 22);
             this.txtCommPort.TabIndex = 21;
-            this.txtCommPort.Text = "COM5";
+            this.txtCommPort.Text = "COM3";
             // 
             // label5
             // 
@@ -427,16 +438,6 @@
             this.label9.TabIndex = 23;
             this.label9.Text = "SIGNAL";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtSignalLength
-            // 
-            this.txtSignalLength.Location = new System.Drawing.Point(223, 388);
-            this.txtSignalLength.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtSignalLength.Name = "txtSignalLength";
-            this.txtSignalLength.ReadOnly = true;
-            this.txtSignalLength.Size = new System.Drawing.Size(175, 22);
-            this.txtSignalLength.TabIndex = 41;
-            this.txtSignalLength.Text = "0";
             // 
             // weightIndicator1
             // 

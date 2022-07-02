@@ -21,9 +21,10 @@ namespace Tester
         {
             try
             {
-                cboDevice.Text = "RINSTRUMR323V3";
-                txtCommPort.Text = "COM3";
+                cboDevice.Text = "RINSTRUMR323V2";
+                txtCommPort.Text = "COM1";
                 cboCType.Text = "COMM";
+
 
 
                 //button1_Click(sender, e);
@@ -59,6 +60,7 @@ namespace Tester
                 weightIndicator1.IPReadTimeOut = Convert.ToInt32(txtTimeOut.Text);
                 weightIndicator1.LengthViewer = txtSignalLength;
                 weightIndicator1.SignalViewer = txtSignal;
+                weightIndicator1.InitializeLifetimeService();
                 weightIndicator1.Start();
             }
             catch (Exception ex)

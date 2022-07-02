@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeightDev.Constants;
 using WeightDev.Enums;
+using WeightDev.Events;
 
 namespace WeightDev
 {
@@ -19,6 +20,7 @@ namespace WeightDev
         public static System.Threading.ManualResetEventSlim evt = new System.Threading.ManualResetEventSlim(false);
         public SerialPort COMM { get; set; }
         private static System.Net.Sockets.TcpClient IP { get; set; }
+        private static System.Net.Sockets.NetworkStream IPStream { get; set; }
         public BackgroundWorker IPBgWorker { get; set; }
 
         public TextBox HandlerTextBox { get; set; }
@@ -63,10 +65,12 @@ namespace WeightDev
 
         public int DataLength { get; set; }
 
+        public string Label { get; set; }
+
         public TextBox SignalTextBox { get; set; }
         public TextBox LengthViewerTextBox { get; set; }
 
-        public static string WeightData
+        public string WeightData
         {
             get; set;
         }
@@ -74,17 +78,191 @@ namespace WeightDev
 
         #region METHODS
 
-        private void setConnection()
+        private void setWeightDevSettings()
         {
+            Enum.TryParse<ConnType>(ConnectionType, out CType);
+            Enum.TryParse<WDevice>(WeighingDevice, out WD);
+
+
+
+            switch (WD)
+            {
+                case WDevice.NONE:
+                    break;
+                case WDevice.GSE460:
+                    DataLength = 9;
+                    EndCharacter = "\r";
+                    ExtStartIndex = 0;
+                    ExtLength = 9;
+                    break;
+                case WDevice.GSE460V2:
+                    DataLength = 8;
+                    EndCharacter = "\r";
+                    ExtStartIndex = 0;
+                    ExtLength = 8;
+                    break;
+                case WDevice.TOLEDO:
+                    break;
+                case WDevice.RINSTRUMR323:
+                    DataLength = 10;
+                    EndCharacter = "\r";
+                    CommNewLine = "";
+                    break;
+                case WDevice.RINSTRUMR323V2:
+                    DataLength = 17;
+                    EndCharacter = "\u0002";
+                    ExtStartIndex = 7;
+                    ExtLength = 7;
+                    CommNewLine = "\r";
+                    break;
+                case WDevice.RINSTRUMR323V3:
+                    DataLength = 13;
+                    EndCharacter = "\u0002";
+                    ExtStartIndex = 6;
+                    ExtLength = 10;
+                    CommReceivedBytesThreshold = 13;
+                    DiscardInBuffer = false;
+                    CommReadBufferSize = 20;
+                    CommNewLine = "\u0003";
+                    break;
+                case WDevice.RINSTRUMR323V4:
+                    DataLength = 11;
+                    EndCharacter = "\n";
+                    ExtStartIndex = 2;
+                    ExtLength = 9;
+                    CommReceivedBytesThreshold = 13;
+                    DiscardInBuffer = false;
+                    CommReadBufferSize = 4;
+                    CommNewLine = "\n";
+                    break;
+                case WDevice.ZM201:
+                    DataLength =8;
+                    EndCharacter = "\n";
+                    ExtStartIndex = 0;
+                    ExtLength = 8;
+                    break;
+                case WDevice.ZM405:
+                    DataLength = 7;
+                    EndCharacter = "\n";
+                    ExtStartIndex = 0;
+                    ExtLength = 7;
+                    break;
+
+            }
+
+            switch (EndCharacter)
+            {
+                case "\\n":
+                case "\n":
+                    EndCharacterCHAR = '\n';
+                    break;
+                case "\\r":
+                case "\r":
+                    EndCharacterCHAR = '\r';
+                    break;
+                case "\\0":
+                case "\0":
+                case "":
+                    EndCharacterCHAR = '\0';
+                    break;
+                case null:
+                    EndCharacterCHAR = '\0';
+                    break;
+                default:
+                    EndCharacterCHAR = Convert.ToChar(EndCharacter);
+                    break;
+            }
+
+            if (CType == ConnType.COMM)
+            {
+                #region WD
+                switch (WD)
+                {
+                    case WDevice.NONE:
+                        break;
+                    case WDevice.GSE460:
+                        COMM.DataReceived -= COMM_GSE460_DataReceived;
+                        COMM.DataReceived += COMM_GSE460_DataReceived;
+                        COMM.ErrorReceived -= COMM_GSE460_ErrorReceived;
+                        COMM.ErrorReceived += COMM_GSE460_ErrorReceived;
+                        break;
+                    case WDevice.GSE460V2:
+                        COMM.DataReceived -= COMM_GSE460V2_DataReceived;
+                        COMM.DataReceived += COMM_GSE460V2_DataReceived;
+                        COMM.ErrorReceived -= COMM_GSE460V2_ErrorReceived;
+                        COMM.ErrorReceived += COMM_GSE460V2_ErrorReceived;
+                        break;
+                    case WDevice.TOLEDO:
+                        break;
+                    case WDevice.RINSTRUMR323:
+                        COMM.DataReceived -= COMM_RINSTRUMR323_DataReceived;
+                        COMM.DataReceived += COMM_RINSTRUMR323_DataReceived;
+                        COMM.ErrorReceived -= COMM_RINSTRUMR323_ErrorReceived;
+                        COMM.ErrorReceived += COMM_RINSTRUMR323_ErrorReceived;
+                        break;
+                    case WDevice.RINSTRUMR323V2:
+                        COMM.DataReceived -= COMM_RINSTRUMR323V2_DataReceived;
+                        COMM.DataReceived += COMM_RINSTRUMR323V2_DataReceived;
+                        COMM.ErrorReceived -= COMM_RINSTRUMR323V2_ErrorReceived;
+                        COMM.ErrorReceived += COMM_RINSTRUMR323V2_ErrorReceived;
+                        break;
+                    case WDevice.RINSTRUMR323V3:
+                        COMM.DataReceived -= COMM_RINSTRUMR323V3_DataReceived;
+                        COMM.DataReceived += COMM_RINSTRUMR323V3_DataReceived;
+                        COMM.ErrorReceived -= COMM_RINSTRUMR323V3_ErrorReceived;
+                        COMM.ErrorReceived += COMM_RINSTRUMR323V3_ErrorReceived;
+                        break;
+                    case WDevice.RINSTRUMR323V4:
+                        COMM.DataReceived -= COMM_RINSTRUMR323V4_DataReceived;
+                        COMM.DataReceived += COMM_RINSTRUMR323V4_DataReceived;
+                        COMM.ErrorReceived -= COMM_RINSTRUMR323V4_ErrorReceived;
+                        COMM.ErrorReceived += COMM_RINSTRUMR323V4_ErrorReceived;
+                        break;
+                    case WDevice.ZM201:
+                        COMM.DataReceived -= COMM_ZM201_DataReceived;
+                        COMM.DataReceived += COMM_ZM201_DataReceived;
+                        COMM.ErrorReceived -= COMM_ZM201_ErrorReceived;
+                        COMM.ErrorReceived += COMM_ZM201_ErrorReceived;
+                        break;
+                    case WDevice.ZM405:
+                        COMM.DataReceived -= COMM_ZM405_DataReceived;
+                        COMM.DataReceived += COMM_ZM405_DataReceived;
+                        COMM.ErrorReceived -= COMM_ZM405_ErrorReceived;
+                        COMM.ErrorReceived += COMM_ZM405_ErrorReceived;
+                        break;
+
+                }
+                #endregion
+                COMM.Disposed -= COMM_Disposed;
+                COMM.Disposed += COMM_Disposed;
+            }
+            else if (CType == ConnType.IP)
+            {
+
+            }
+
+            ReceivedData = new ObservableCollection<byte>();
+            ReceivedData.CollectionChanged -= ReceivedData_CollectionChanged;
+            ReceivedData.CollectionChanged += ReceivedData_CollectionChanged;
+        }
+
+        public void Start()
+        {
+            Started = false;
+
+            if (AccessPwd != "mijochanel09041990") return;
+
+            if (COMM == null) COMM = new SerialPort();
+            if (COMM.IsOpen) Stop();
+
+            setWeightDevSettings();
+
+
             try
             {
-                Enum.TryParse<ConnType>(ConnectionType, out CType);
-                Enum.TryParse<WDevice>(WeighingDevice, out WD);
 
                 if (CType == ConnType.COMM)
                 {
-
-                    COMM = new SerialPort();
                     COMM.PortName = CommPortName;
                     COMM.BaudRate = CommBaudRate;
                     COMM.Handshake = Handshake.None;
@@ -93,7 +271,7 @@ namespace WeightDev
                     COMM.ReceivedBytesThreshold = CommReceivedBytesThreshold;
                     COMM.ReadBufferSize = CommReadBufferSize;
                     COMM.NewLine = CommNewLine;
-                    COMM.ParityReplace = 0 ;
+                    COMM.ParityReplace = 0;
                     COMM.Encoding = Encoding.GetEncoding(28591);
 
                     #region PARITY
@@ -146,180 +324,44 @@ namespace WeightDev
                     }
 
                     COMM.Open();
+                    Started = true;
                 }
                 else if (CType == ConnType.IP)
                 {
-                    if (IP != null) { if (IP.Connected) IP.Close(); }
+                    if (IP != null)
+                    {
+                        if (IP.Connected) IP.GetStream().Close();
+                        IP.Close();
+                    }
                     IP = new TcpClient();
 
                     int ipPort = 1;
                     int.TryParse(IPPort, out ipPort);
-                    IP.ReceiveTimeout = IPReadTimeOut;
+                    //IP.ReceiveTimeout = IPReadTimeOut;
                     IP.Connect(IPAddress, ipPort);
+
+                    IPStream = IP.GetStream();
+                    //System.Threading.Thread.Sleep(2000);
                     IP.NoDelay = true;
+                    IP.ReceiveBufferSize = 4096;
+
+                    IPBgWorker = new System.ComponentModel.BackgroundWorker();
+                    IPBgWorker.WorkerSupportsCancellation = true;
+                    IPBgWorker.DoWork -= IPBgWorker_DoWork;
+                    IPBgWorker.DoWork += IPBgWorker_DoWork;
+                    Started = true;
+                    IPBgWorker.RunWorkerAsync();
+                    evt.Reset();
 
                 }
                 ReadingInterval = ReadingInterval == 0 ? 100 : ReadingInterval;
 
-
+              
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-        }
-
-        public void Start()
-        {
-            Started = false;
-
-            if (AccessPwd != "mijochanel09041990") return;
-
-
-            switch (WD)
-            {
-                case WDevice.NONE:
-                    break;
-                case WDevice.GSE460:
-                    DataLength = 9;
-                    EndCharacter = "\r";
-                    ExtStartIndex = 0;
-                    ExtLength = 9;
-                    break;
-                case WDevice.GSE460V2:
-                    DataLength = 8;
-                    EndCharacter = "\r";
-                    ExtStartIndex = 0;
-                    ExtLength = 8;
-                    break;
-                case WDevice.TOLEDO:
-                    break;
-                case WDevice.RINSTRUMR323:
-                    DataLength = 12;
-                    EndCharacter = "\r";
-                    break;
-                case WDevice.RINSTRUMR323V2:
-                    DataLength = 17;
-                    EndCharacter = "\r";
-                    ExtStartIndex = 6;
-                    ExtLength = 8;
-                    break;
-                case WDevice.RINSTRUMR323V3:
-                    DataLength = 13;
-                    EndCharacter = "\u0002";
-                    ExtStartIndex = 6;
-                    ExtLength = 10;
-                    CommReceivedBytesThreshold = 13;
-                    DiscardInBuffer = false;
-                    CommReadBufferSize = 20;
-                    COMM.NewLine = "\u0003";
-
-                    break;
-                case WDevice.ZM405V2:
-                    DataLength = 9;
-                    EndCharacter = "\r";
-                    ExtStartIndex = 0;
-                    ExtLength = 9;
-                    break;
-
-            }
-
-            setConnection();
-
-         
-
-            switch (EndCharacter)
-            {
-                case "\\n":
-                case "\n":
-                    EndCharacterCHAR = '\n';
-                    break;
-                case "\\r":
-                case "\r":
-                    EndCharacterCHAR = '\r';
-                    break;
-                case "\\0":
-                case "\0":
-                case "":
-                    EndCharacterCHAR = '\0';
-                    break;
-                case null:
-                    EndCharacterCHAR = '\0';
-                    break;
-                default:
-                    EndCharacterCHAR = Convert.ToChar(EndCharacter);
-                    break;
-            }
-            if (CType == ConnType.COMM)
-            {
-                #region WD
-                switch (WD)
-                {
-                    case WDevice.NONE:
-                        break;
-                    case WDevice.GSE460:
-                        COMM.DataReceived -= COMM_GSE460_DataReceived;
-                        COMM.DataReceived += COMM_GSE460_DataReceived;
-                        COMM.ErrorReceived -= COMM_GSE460_ErrorReceived;
-                        COMM.ErrorReceived += COMM_GSE460_ErrorReceived;
-                        break;
-                    case WDevice.GSE460V2:
-                        COMM.DataReceived -= COMM_GSE460V2_DataReceived;
-                        COMM.DataReceived += COMM_GSE460V2_DataReceived;
-                        COMM.ErrorReceived -= COMM_GSE460V2_ErrorReceived;
-                        COMM.ErrorReceived += COMM_GSE460V2_ErrorReceived;
-                        break;
-                    case WDevice.TOLEDO:
-                        break;
-                    case WDevice.RINSTRUMR323:
-                        COMM.DataReceived -= COMM_RINSTRUMR323_DataReceived;
-                        COMM.DataReceived += COMM_RINSTRUMR323_DataReceived;
-                        COMM.ErrorReceived -= COMM_RINSTRUMR323_ErrorReceived;
-                        COMM.ErrorReceived += COMM_RINSTRUMR323_ErrorReceived;
-                        break;
-                    case WDevice.RINSTRUMR323V2:
-                        COMM.DataReceived -= COMM_RINSTRUMR323V2_DataReceived;
-                        COMM.DataReceived += COMM_RINSTRUMR323V2_DataReceived;
-                        COMM.ErrorReceived -= COMM_RINSTRUMR323V2_ErrorReceived;
-                        COMM.ErrorReceived += COMM_RINSTRUMR323V2_ErrorReceived;
-                        break;
-                    case WDevice.RINSTRUMR323V3:
-                        COMM.DataReceived -= COMM_RINSTRUMR323V3_DataReceived;
-                        COMM.DataReceived += COMM_RINSTRUMR323V3_DataReceived;
-                        COMM.ErrorReceived -= COMM_RINSTRUMR323V3_ErrorReceived;
-                        COMM.ErrorReceived += COMM_RINSTRUMR323V3_ErrorReceived;
-                        break;
-                    case WDevice.ZM405V2:
-                        COMM.DataReceived -= COMM_ZM405V2_DataReceived;
-                        COMM.DataReceived += COMM_ZM405V2_DataReceived;
-                        COMM.ErrorReceived -= COMM_ZM405V2_ErrorReceived;
-                        COMM.ErrorReceived += COMM_ZM405V2_ErrorReceived;
-                        break;
-
-                }
-                #endregion
-                COMM.Disposed -= COMM_Disposed;
-                COMM.Disposed += COMM_Disposed;
-
-
-            }
-            else if (CType == ConnType.IP)
-            {
-                Started = true;
-
-                IPBgWorker = new System.ComponentModel.BackgroundWorker();
-                IPBgWorker.WorkerSupportsCancellation = true;
-                IPBgWorker.DoWork -= IPBgWorker_DoWork;
-                IPBgWorker.DoWork += IPBgWorker_DoWork;
-                IPBgWorker.RunWorkerAsync();
-                evt.Reset();
-            }
-
-            ReceivedData = new ObservableCollection<byte>();
-            ReceivedData.CollectionChanged -= ReceivedData_CollectionChanged;
-            ReceivedData.CollectionChanged += ReceivedData_CollectionChanged;
-
-            Started = true;
         }
 
         private void COMM_Disposed(object sender, EventArgs e)
@@ -329,23 +371,28 @@ namespace WeightDev
 
         private void IPBgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var netStream = IP.GetStream();
 
             while (Started)
             {
+                DataLength = 8;
                 if (e.Cancel) return;
                 var bytesReceived = new byte[DataLength];
-                evt.Wait(50);
+                evt.Wait(200);
                 evt.Set();
                 try
                 {
-                    netStream.Read(bytesReceived, 0, DataLength);
+                    IPStream.Read(bytesReceived, 0, DataLength);
 
                     if (bytesReceived.Count() > 0)
                     {
                         var streamData = Encoding.ASCII.GetString(bytesReceived);
                         byte[] bytes = Encoding.ASCII.GetBytes(streamData);
 
+                        //if (streamData.IndexOf('\n') == (DataLength - 1) || streamData.IndexOf('\r') == (DataLength - 1))
+                        //{
+                        //    SetValue(streamData);
+                        //}
+                        System.Diagnostics.Debug.WriteLine(streamData);
                         for (int i = 0; i <= bytes.Count() - 1; i++)
                         {
                             ReceivedData.Add(bytesReceived[i]);
@@ -397,7 +444,19 @@ namespace WeightDev
             }
 
             var valid = true;
-            if (str.LastIndexOf(EndCharacterCHAR) != (DataLength - 1)) valid = false;
+            Enum.TryParse<WDevice>(WeighingDevice, out WD);
+
+           
+            switch (WD)
+            {
+                case WDevice.ZM201:
+                    if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
+                    break;
+                case WDevice.ZM405:
+                    if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
+                    break;
+            }
+            
 
             if (str.Length < (ExtStartIndex + ExtLength))
             {
@@ -416,9 +475,16 @@ namespace WeightDev
 
             if (valid)
             {
-                str = Convert.ToDecimal(str.Substring(ExtStartIndex, ExtLength)).ToString();
-                SetValue(str);
-                WeightData = str;
+
+                var b = Decimal.TryParse(str.Substring(ExtStartIndex, ExtLength), out var r);
+
+                if (b == true)
+                {
+                    str = r.ToString();
+                    SetValue(str);
+                    WeightData = str;
+                }
+                //IP.GetStream().Flush();
             }
 
             evt.Reset();
@@ -435,6 +501,8 @@ namespace WeightDev
             Started = false;
             if (COMM == null) return;
             evt.Wait(500);
+            evt.Set();
+
             if (CType == ConnType.COMM)
             {
                 if (!COMM.IsOpen) return;
@@ -456,9 +524,13 @@ namespace WeightDev
                         COMM.DataReceived -= COMM_RINSTRUMR323V2_DataReceived;
                         COMM.ErrorReceived -= COMM_RINSTRUMR323V2_ErrorReceived;
                         break;
-                    case WDevice.ZM405V2:
-                        COMM.DataReceived -= COMM_ZM405V2_DataReceived;
-                        COMM.ErrorReceived -= COMM_ZM405V2_ErrorReceived;
+                    case WDevice.ZM201:
+                        COMM.DataReceived -= COMM_ZM201_DataReceived;
+                        COMM.ErrorReceived -= COMM_ZM201_ErrorReceived;
+                        break;
+                    case WDevice.ZM405:
+                        COMM.DataReceived -= COMM_ZM405_DataReceived;
+                        COMM.ErrorReceived -= COMM_ZM405_ErrorReceived;
                         break;
                 }
 
@@ -470,8 +542,10 @@ namespace WeightDev
             else if (CType == ConnType.IP)
             {
                 Thread CloseDown = new Thread(new ThreadStart(stopIP)); //close ip in new thread to avoid hang
-
                 CloseDown.Start();
+                //System.Threading.Thread.Sleep(6000)
+
+;
             }
 
 
@@ -495,12 +569,24 @@ namespace WeightDev
         {
             if (IP != null)
             {
-                IPBgWorker.DoWork -= IPBgWorker_DoWork;
+                if (IPBgWorker != null)
+                {
+                    IPBgWorker.DoWork -= IPBgWorker_DoWork;
+                    IPBgWorker.DoWork -= IPBgWorker_DoWork;
+                    IPBgWorker.CancelAsync();
+                    IPBgWorker.Dispose();
+                }
                 if (IP.Connected)
                 {
-                    IP.Close();
-                    IPBgWorker.CancelAsync();
+                    //IPStream.Dispose();
+                    //System.Threading.Thread.Sleep(4000);
+                    //IPStream.Close();
+                    //IP.Close();
+
+                    //clearMemory(new object[] { IP, IPBgWorker });
                 }
+                //evt.Wait(10000);
+                //evt.Set();
             }
         }
 
@@ -530,7 +616,8 @@ namespace WeightDev
                 if (InMotion == false) InMotionValue = cValue; else InMotionValue = lastValue;
                 InMotion = true;
                 motionDetectionCount = 4;
-            } else
+            }
+            else
             {
                 if (motionDetectionCount <= 0) InMotion = false;
                 motionDetectionCount -= 1;
@@ -542,7 +629,15 @@ namespace WeightDev
 
             if (HandlerTextBox.InvokeRequired)
             {
-                HandlerTextBox.Invoke(new MethodInvoker(delegate { HandlerTextBox.Text = val; }));
+                try
+                {
+                    if (!HandlerTextBox.IsDisposed)
+                        HandlerTextBox.Invoke(new MethodInvoker(delegate { HandlerTextBox.Text = val; }));
+                }
+                catch
+                {
+
+                }
             }
             else
             {
@@ -551,20 +646,20 @@ namespace WeightDev
         }
 
         private void SetSignalValue(string val)
-{
-    if (Started == false) return;
+        {
+            if (Started == false) return;
 
-    if (SignalTextBox == null) return;
+            if (SignalTextBox == null) return;
 
-    if (SignalTextBox.InvokeRequired)
-    {
-        SignalTextBox.Invoke(new MethodInvoker(delegate { SignalTextBox.Text += val; }));
-    }
-    else
-    {
-        SignalTextBox.Text = val;
-    }
-}
+            if (SignalTextBox.InvokeRequired)
+            {
+                SignalTextBox.Invoke(new MethodInvoker(delegate { SignalTextBox.Text += val; }));
+            }
+            else
+            {
+                SignalTextBox.Text = val;
+            }
+        }
 
         private void SetSignaLength(string val)
         {
@@ -582,5 +677,32 @@ namespace WeightDev
             }
         }
 
+        public event System.EventHandler<WeightChangedEventArgs> WeightChanged;
+
+        protected virtual void OnWeightChanged(string value)
+        {
+            decimal.TryParse(value, out var wt);
+            if (WeightChanged != null) WeightChanged(this, new WeightChangedEventArgs()
+            {
+                Label = this.Label,
+                Weight = wt
+            }); ;
+        }
+
+        public void SendWeightChangedEvent()
+        {
+            OnWeightChanged(WeightData);
+        }
+
+        public void clearMemory(object[] objects)
+        {
+            GC.Collect();
+            GC.Collect();
+
+            foreach (var obj in objects)
+            {
+                GC.SuppressFinalize(obj);
+            }
+        }
     }
 }

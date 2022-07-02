@@ -39,20 +39,37 @@ namespace WeightDev
                         //evt.Wait(10);
                         //evt.Set();
 
-                        // ST,GS,+001260.kg\r\n
+                        //ST,GS,+000000.kg
+                        //ST,GS,+000000.kg
+                        //ST,GS,+000000.kg
+                        //ST,GS,+000000.kg
+                        //ST,GS,+000000.kg
+                        //ST,GS,+001260.kg\r\n
                         // FORMAR_4
                         //ReceivedData.Add((byte)COMM.ReadByte());
 
+                        //
                         //var d = System.Text.Encoding.UTF8.GetString(ReceivedData.ToArray());
                         //System.Diagnostics.Debug.WriteLine(d);
-                        if (Started == false) return;
+                        //if (Started == false) return;
                         var signal = COMM.ReadLine();
-                        byte[] bytes = Encoding.ASCII.GetBytes(signal);
 
-                        if (signal.LastIndexOf(EndCharacterCHAR) != (DataLength - 1)) return;
-                        var filter = signal.Substring(ExtStartIndex, 7);
-                        var intFilter = 0;
-                        int.TryParse(filter,  out intFilter);
+                        SetSignalValue(signal);
+                        SetSignaLength(signal);
+
+                        if (signal.Length > 17) return;
+
+                        var filtered = signal.Replace(",", "");
+                        filtered = filtered.Replace("US", "");
+                        filtered = filtered.Replace("GS", "");
+                        filtered = filtered.Replace("ST", "");
+                        filtered = filtered.Replace("NT", "");
+                        filtered = filtered.Replace("\u0003", "");
+                        filtered = filtered.Replace("\u0002", "");
+                        filtered = filtered.Replace(".kg", "");
+                        filtered = filtered.Replace(" ", "");
+                        int.TryParse(filtered, out var intFilter);
+                      
                         SetValue(intFilter.ToString());
                     }
                     catch (Exception ex)
