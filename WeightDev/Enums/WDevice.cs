@@ -18,6 +18,7 @@ namespace WeightDev.Enums
         TOLEDO,
         ZM201,
         ZM405,
+        KELI_XK
     }
 
 }

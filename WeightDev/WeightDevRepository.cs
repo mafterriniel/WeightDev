@@ -147,6 +147,15 @@ namespace WeightDev
                     ExtStartIndex = 0;
                     ExtLength = 7;
                     break;
+                case WDevice.KELI_XK:
+                    DataLength = 17;
+                    //EndCharacter = "\r";
+                    ExtStartIndex = 0;
+                    ExtLength = 17;
+                    //CommReadBufferSize = 8;
+                    //CommReceivedBytesThreshold = 1;
+                    CommNewLine = EndCharacter;
+                    break;
 
             }
 
@@ -230,6 +239,12 @@ namespace WeightDev
                         COMM.ErrorReceived -= COMM_ZM405_ErrorReceived;
                         COMM.ErrorReceived += COMM_ZM405_ErrorReceived;
                         break;
+                    case WDevice.KELI_XK:
+                        COMM.DataReceived -= COMM_KELI_XK3196E2_WIM_DataReceived;
+                        COMM.DataReceived += COMM_KELI_XK3196E2_WIM_DataReceived;
+                        COMM.ErrorReceived -= COMM_KELI_XK3196E2_WIM_ErrorReceived;
+                        COMM.ErrorReceived += COMM_KELI_XK3196E2_WIM_ErrorReceived;
+                        break;
 
                 }
                 #endregion
@@ -271,8 +286,9 @@ namespace WeightDev
                     COMM.ReceivedBytesThreshold = CommReceivedBytesThreshold;
                     COMM.ReadBufferSize = CommReadBufferSize;
                     COMM.NewLine = CommNewLine;
-                    COMM.ParityReplace = 0;
-                    COMM.Encoding = Encoding.GetEncoding(28591);
+                    //COMM.ParityReplace = 0;
+                    //COMM.Encoding = Encoding.GetEncoding(28591);
+                    COMM.Encoding = Encoding.GetEncoding("Windows-1252");
 
                     #region PARITY
                     switch (CommParity)
@@ -453,6 +469,9 @@ namespace WeightDev
                     if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
                     break;
                 case WDevice.ZM405:
+                    if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
+                    break;
+                case WDevice.KELI_XK:
                     if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
                     break;
             }

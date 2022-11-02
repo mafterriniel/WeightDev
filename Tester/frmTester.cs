@@ -21,8 +21,8 @@ namespace Tester
         {
             try
             {
-                cboDevice.Text = "RINSTRUMR323V2";
-                txtCommPort.Text = "COM1";
+                cboDevice.Text = "KELI_XK";
+                txtCommPort.Text = "COM3";
                 cboCType.Text = "COMM";
 
 
@@ -46,7 +46,7 @@ namespace Tester
           
                 weightIndicator1.WeighingDevice = cboDevice.Text;
                 weightIndicator1.CommPortName = txtCommPort.Text; ;
-                weightIndicator1.CommBaudRate = 9600;
+                weightIndicator1.CommBaudRate = 4800;
                 weightIndicator1.ReadingInterval = 100;
                 weightIndicator1.CommReadTimeout = 3000;
                 weightIndicator1.CommReadBufferSize = Convert.ToInt32(txtReadBufferSize.Text);
