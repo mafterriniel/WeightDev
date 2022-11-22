@@ -21,4 +21,5 @@ namespace WeightDev.Enums
         KELI_XK
     }
 
+
 }

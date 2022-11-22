@@ -61,17 +61,31 @@ namespace WeightDev
 
                         ReceivedData.Add(bs[0]);
 
-                        //string signal = COMM.ReadExisting();
+                        //string signal = String.Empty;
+                        //if (COMMReadType == Enums.COMMReadType.TYPE_1)
+                        //{
+                        //    signal = COMM.ReadLine();
+                        //} 
+                        //else if (COMMReadType == Enums.COMMReadType.TYPE_2)
+                        //{
+                        //    signal = COMM.ReadExisting();
+                        //}
 
-                        //SetValue(signal);
+                        //SetSignalValue(signal);
+                        //SetSignaLength(signal);
+                        //COMM.DiscardInBuffer();
+
+
+                        //if (DataLength != signal.Length) return;
+
+                        //SetValue(signal.ToString());
                         //if (signal.Length > DataLength)
                         //{
                         //    COMM.DiscardInBuffer();
                         //    return;
                         //}
 
-                        //SetSignalValue(signal);
-                        //SetSignaLength(signal);
+                
                         //SetValue(signal.ToString());
                         //var isNegative = signal.Contains("-");
                         //var filtered = signal;
@@ -89,7 +103,6 @@ namespace WeightDev
 
                         //SetValue(intFilter.ToString());
 
-                        //COMM.DiscardInBuffer();
                         //COMM.DiscardOutBuffer();
 
                     }

@@ -45,11 +45,21 @@ namespace WeightDev
         public int CommReceivedBytesThreshold { get; set; }
         public int CommReadBufferSize { get; set; }
         public string CommNewLine { get; set; }
+
+        public string CommParityReplace { get; set; }
+
+
+        public COMMEncoding COMMEncoding { get; set; }
+
+        public COMMReadType COMMReadType { get; set; }
         public string WeighingDevice { get; set; }
         public int ReadingInterval { get; set; }
         public string AccessPwd { get; set; }
         public decimal SimulationIncrement { get; set; }
         public int SimulationSpeed { get; set; }
+
+        public string StartCharacter { get; set; }
+
         public string EndCharacter { get; set; }
         private char EndCharacterCHAR { get; set; }
         private bool Started { get; set; }
@@ -148,13 +158,13 @@ namespace WeightDev
                     ExtLength = 7;
                     break;
                 case WDevice.KELI_XK:
-                    DataLength = 17;
+                    //DataLength = 17;
                     //EndCharacter = "\r";
-                    ExtStartIndex = 0;
-                    ExtLength = 17;
+                    //ExtStartIndex = 0;
+                    //ExtLength = 17;
                     //CommReadBufferSize = 8;
                     //CommReceivedBytesThreshold = 1;
-                    CommNewLine = EndCharacter;
+                    //CommNewLine = EndCharacter;
                     break;
 
             }
@@ -285,10 +295,37 @@ namespace WeightDev
                     COMM.WriteTimeout = CommWriteTimeout == 0 ? 1000 : CommWriteTimeout;
                     COMM.ReceivedBytesThreshold = CommReceivedBytesThreshold;
                     COMM.ReadBufferSize = CommReadBufferSize;
-                    COMM.NewLine = CommNewLine;
-                    //COMM.ParityReplace = 0;
+
+                    if (!String.IsNullOrEmpty(CommNewLine)) COMM.NewLine = CommNewLine;
+
+                    if (String.IsNullOrEmpty(CommParityReplace) == false )
+                    {
+                        byte[] pr = System.Text.Encoding.ASCII.GetBytes(CommParityReplace);
+                        COMM.ParityReplace = pr[0];
+                    } else
+                    {
+
+                    }
+                   
+
+                    switch (COMMEncoding)
+                    {
+                        case COMMEncoding.TYPE_1:
+                            //COMM.Encoding = Encoding.GetEncoding(28591);
+                            break;
+                        case COMMEncoding.TYPE_2:
+                            COMM.Encoding = Encoding.GetEncoding(932);
+                            break;
+                        case COMMEncoding.TYPE_3:
+                            COMM.Encoding = Encoding.GetEncoding(1252);
+                            break;
+                        case COMMEncoding.TYPE_4:
+                            COMM.Encoding = Encoding.GetEncoding("Windows-1252");
+                            break;
+                    }
+
                     //COMM.Encoding = Encoding.GetEncoding(28591);
-                    COMM.Encoding = Encoding.GetEncoding("Windows-1252");
+                    //COMM.Encoding = Encoding.GetEncoding("Windows-1252");
 
                     #region PARITY
                     switch (CommParity)
@@ -472,7 +509,7 @@ namespace WeightDev
                     if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
                     break;
                 case WDevice.KELI_XK:
-                    if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
+                    if (str.IndexOf("\u0010") != DataLength - 1) valid = false;
                     break;
             }
             

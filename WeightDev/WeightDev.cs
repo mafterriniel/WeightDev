@@ -71,13 +71,15 @@ namespace WeightDev
         public int CommReceivedBytesThreshold { get; set; }
         public int CommReadBufferSize { get; set; }
         public string CommNewLine { get; set; }
+        public string CommParityReplace { get; set; }
         public string WeighingDevice { get; set; }
         public int ReadingInterval { get; set; }
         public string AccessPwd { get; set; }
         public decimal SimulationIncrement { get; set; }
         public int SimulationSpeed { get; set; }
+        public string StartCharacter { get; set; }
         public string EndCharacter { get; set; }
-        private char EndCharacterCHAR { get; set; }
+
         private bool Started { get; set; }
 
         public bool DiscardInBuffer { get; set; }
@@ -85,6 +87,10 @@ namespace WeightDev
         public int ExtStartIndex { get; set; }
         private int ExtLength { get; set; }
         public string ConnectionType { get; set; }
+
+        public string COMMEncoding { get; set; }
+
+        public string COMMReadType { get; set; }
 
         public  System.Net.Sockets.TcpClient IP { get; set; }
         public string IPAddress { get; set; }
@@ -111,12 +117,23 @@ namespace WeightDev
             weightDevRepo.CommPortName = CommPortName;
             weightDevRepo.CommWriteTimeout = CommWriteTimeout;
             weightDevRepo.CommReadBufferSize = CommReadBufferSize;
-            weightDevRepo.CommNewLine = CommNewLine;
+
+            if (!string.IsNullOrEmpty(CommNewLine))
+                weightDevRepo.CommNewLine = CommNewLine;
+
             weightDevRepo.CommParity = CommParity;
             weightDevRepo.CommDataBits = CommDataBits;
             weightDevRepo.CommStopBits = CommStopBits;
             weightDevRepo.CommDTREnable = CommDTREnable;
             weightDevRepo.CommRTSEnable = CommRTSEnable;
+            weightDevRepo.CommParityReplace = CommParityReplace;
+
+
+            Enum.TryParse<Enums.COMMEncoding>(COMMEncoding?.Replace(" ","_"), out var commE);
+            Enum.TryParse<Enums.COMMReadType>(COMMReadType?.Replace(" ", "_"), out var commR);
+
+            weightDevRepo.COMMEncoding = commE;
+            weightDevRepo.COMMReadType = commR;
             weightDevRepo.HandlerTextBox = this;
             weightDevRepo.DataLength = DataLength;
             weightDevRepo.SignalTextBox = SignalViewer;
@@ -124,10 +141,12 @@ namespace WeightDev
             weightDevRepo.DiscardInBuffer = DiscardInBuffer;
             weightDevRepo.DiscardOutBuffer = DiscardOutBuffer;
             weightDevRepo.Sensitivity = Sensitivity;
+            weightDevRepo.CommNewLine = CommNewLine;
 
             weightDevRepo.IPAddress = IPAddress;
             weightDevRepo.IPPort = IPPort;
             weightDevRepo.IPReadTimeOut = IPReadTimeOut;
+            weightDevRepo.StartCharacter = StartCharacter;
             weightDevRepo.EndCharacter = EndCharacter;
             weightDevRepo.ExtStartIndex = ExtStartIndex;
             weightDevRepo.ExtLength = ExtLength;

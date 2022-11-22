@@ -10,7 +10,6 @@ namespace WeightDev
 {
     public partial class WeightDevRepository
     {
-
         //
         /// <summary>
         ///  ALL RINSTRUM R323 FORMATS
@@ -75,7 +74,7 @@ namespace WeightDev
 
                         int.TryParse(filtered,   out var intFilter);
                         if (isNegative) { intFilter = intFilter * (-1); }
-                        SetValue(filtered.ToString());
+                        SetValue(intFilter.ToString());
 
                     }
                     catch (Exception ex)
