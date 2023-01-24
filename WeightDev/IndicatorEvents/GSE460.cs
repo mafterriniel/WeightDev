@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
@@ -38,7 +35,7 @@ namespace WeightDev
         {
             try
             {
-               
+
 
                 switch (e.EventType)
                 {
@@ -63,15 +60,15 @@ namespace WeightDev
 
 
 
-                        //string data = COMM.ReadChar();
-                        //string filteredData = data;
-                        //filteredData = data.Replace("\n", "");
-                        //filteredData = data.Replace(" ", "");
-                        //var intData = 0;
-                        //Int32.TryParse(filteredData, out intData);
-                        //SetValue(filteredData);
-                        //this.SetLength(data.Length.ToString());
-                        //break;
+                    //string data = COMM.ReadChar();
+                    //string filteredData = data;
+                    //filteredData = data.Replace("\n", "");
+                    //filteredData = data.Replace(" ", "");
+                    //var intData = 0;
+                    //Int32.TryParse(filteredData, out intData);
+                    //SetValue(filteredData);
+                    //this.SetLength(data.Length.ToString());
+                    //break;
                     case SerialData.Eof:
                         break;
                 }

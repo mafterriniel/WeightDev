@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
@@ -52,11 +48,11 @@ namespace WeightDev
                         filtered = filtered.Replace("N", "");
                         filtered = filtered.Replace(" ", "");
 
-                        var isNumeric = int.TryParse(filtered,   out int intFilter);
+                        var isNumeric = int.TryParse(filtered, out int intFilter);
                         if (!isNumeric) return;
-  
+
                         SetValue(intFilter.ToString());
-                       
+
                         COMM.DiscardInBuffer();
 
                     }
@@ -65,7 +61,7 @@ namespace WeightDev
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                         SetValue(CONST_STR.NO_WEIGHT);
                     }
-                   
+
                     break;
                 case SerialData.Eof:
                     SetValue(CONST_STR.NO_WEIGHT);

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
@@ -42,19 +38,19 @@ namespace WeightDev
                         SetSignalValue(signal);
                         SetSignaLength(signal);
                         //SetValue(signal.ToString());
-             
+
                         var filtered = signal.Replace("\u0003", "");
-                        filtered = filtered.Replace("\u0002","");
+                        filtered = filtered.Replace("\u0002", "");
                         filtered = filtered.Replace("GSI", "");
                         filtered = filtered.Replace("GMI", "");
-                        int.TryParse(filtered,   out var intFilter);
+                        int.TryParse(filtered, out var intFilter);
                         if (intFilter == 0)
                         {
                             System.Diagnostics.Debug.WriteLine("");
                         }
-                       
+
                         SetValue(intFilter.ToString());
-                       
+
                         COMM.DiscardInBuffer();
 
                     }
@@ -63,7 +59,7 @@ namespace WeightDev
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                         SetValue(CONST_STR.NO_WEIGHT);
                     }
-                   
+
                     break;
                 case SerialData.Eof:
                     SetValue(CONST_STR.NO_WEIGHT);

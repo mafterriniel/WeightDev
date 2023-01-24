@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
@@ -72,7 +68,7 @@ namespace WeightDev
                         isNegative = filtered.Contains("-");
                         filtered = filtered.Replace("-", "");
 
-                        int.TryParse(filtered,   out var intFilter);
+                        int.TryParse(filtered, out var intFilter);
                         if (isNegative) { intFilter = intFilter * (-1); }
                         SetValue(intFilter.ToString());
 
@@ -82,7 +78,7 @@ namespace WeightDev
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                         SetValue(CONST_STR.NO_WEIGHT);
                     }
-                   
+
                     break;
                 case SerialData.Eof:
                     SetValue(CONST_STR.NO_WEIGHT);

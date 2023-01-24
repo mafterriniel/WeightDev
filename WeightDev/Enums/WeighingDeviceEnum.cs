@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WeightDev.Enums
+﻿namespace WeightDev.Enums
 {
-    public  enum WDevice
+    public enum WeighingDeviceEnum
     {
         NONE,
         GSE460,

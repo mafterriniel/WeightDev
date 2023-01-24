@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
 {
     public partial class WeightDevRepository
     {
-       
+
         #region RINSTRUMR323V2
         private void COMM_RINSTRUMR323V2_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
@@ -69,7 +65,7 @@ namespace WeightDev
                         filtered = filtered.Replace(".kg", "");
                         filtered = filtered.Replace(" ", "");
                         int.TryParse(filtered, out var intFilter);
-                      
+
                         SetValue(intFilter.ToString());
                     }
                     catch (Exception ex)
@@ -77,7 +73,7 @@ namespace WeightDev
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                         SetValue(CONST_STR.NO_WEIGHT);
                     }
-                   
+
                     break;
                 case SerialData.Eof:
                     SetValue(CONST_STR.NO_WEIGHT);
@@ -85,7 +81,7 @@ namespace WeightDev
             }
         }
 
-    
+
 
         #endregion
     }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WeightDev.Events
 {
@@ -17,5 +13,21 @@ namespace WeightDev.Events
 
         public string Label { get; set; }
         public decimal Weight { get; set; }
+    }
+
+    public class AxleWtAddedEventArgs : EventArgs
+    {
+
+        public AxleWtAddedEventArgs(int axleNum, decimal weight, DateTime DateCaptured)
+        {
+            AxleNum = axleNum;
+            Weight = weight;
+            this.DateCaptured = DateCaptured;
+        }
+
+        public int AxleNum { get; set; }
+        public decimal Weight { get; set; }
+
+        public DateTime DateCaptured { get; set; }
     }
 }

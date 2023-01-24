@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Drawing;
-using System.IO.Ports;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeightDev.Constants;
 using WeightDev.Enums;
+using WeightDev.Events;
 
 namespace WeightDev
 {
@@ -54,7 +45,12 @@ namespace WeightDev
             this.IPReadTimeOut = 1000;
             this.IPPort = "1";
 
+            this.WeighingMode = WeighingModeEnum.STANDARD;
+
+            weightDevRepo.AxleWt_Added += WeightDevRepo_AxleWtAddedEvent;
+
         }
+
 
         public TextBox LengthViewer { get; set; }
         public TextBox SignalViewer { get; set; }
@@ -92,7 +88,7 @@ namespace WeightDev
 
         public string COMMReadType { get; set; }
 
-        public  System.Net.Sockets.TcpClient IP { get; set; }
+        public System.Net.Sockets.TcpClient IP { get; set; }
         public string IPAddress { get; set; }
         public string IPPort { get; set; }
         public int IPReadTimeOut { get; set; }
@@ -103,6 +99,27 @@ namespace WeightDev
         public bool InMotion { get { return weightDevRepo.InMotion; } }
 
         public decimal Sensitivity { get; set; }
+
+        public decimal AxleTriggerWt { get; set; }
+
+        public WeighingModeEnum WeighingMode { get; set; }
+
+
+        private WeighingInputEnum _weighingInput;
+        public WeighingInputEnum WeighingInput
+        {
+            get
+            {
+                return _weighingInput;
+            }
+            set
+            {
+                _weighingInput = value;
+                this.ReadOnly = value == WeighingInputEnum.AUTO;
+                weightDevRepo.WeighingInput = value;
+            }
+        }
+
         public void Start()
         {
             Started = false;
@@ -117,6 +134,8 @@ namespace WeightDev
             weightDevRepo.CommPortName = CommPortName;
             weightDevRepo.CommWriteTimeout = CommWriteTimeout;
             weightDevRepo.CommReadBufferSize = CommReadBufferSize;
+            weightDevRepo.WeighingMode = WeighingMode;
+            weightDevRepo.WeighingInput = WeighingInput;
 
             if (!string.IsNullOrEmpty(CommNewLine))
                 weightDevRepo.CommNewLine = CommNewLine;
@@ -128,8 +147,7 @@ namespace WeightDev
             weightDevRepo.CommRTSEnable = CommRTSEnable;
             weightDevRepo.CommParityReplace = CommParityReplace;
 
-
-            Enum.TryParse<Enums.COMMEncoding>(COMMEncoding?.Replace(" ","_"), out var commE);
+            Enum.TryParse<Enums.COMMEncoding>(COMMEncoding?.Replace(" ", "_"), out var commE);
             Enum.TryParse<Enums.COMMReadType>(COMMReadType?.Replace(" ", "_"), out var commR);
 
             weightDevRepo.COMMEncoding = commE;
@@ -170,6 +188,33 @@ namespace WeightDev
         {
             get; set;
         }
+
+        /// <summary>
+        ///   This will be called when new axle is registered. It will work only if WeighingMode is AXLE
+        /// </summary>
+        public event System.EventHandler<AxleWtAddedEventArgs> AxleWt_Added;
+
+
+        private void WeightDevRepo_AxleWtAddedEvent(object sender, AxleWtAddedEventArgs e)
+        {
+            AxleWt_Added?.Invoke(this, e);
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (WeighingInput == WeighingInputEnum.AUTO) 
+            base.OnTextChanged(e);
+
+
+            if (WeighingMode == WeighingModeEnum.AXLE)
+            {
+                decimal.TryParse(this.Text, out var wt);
+                weightDevRepo.ProcessAxleWt(wt);
+
+            }
+        }
+
+        public void ResetAxle() => weightDevRepo.ResetAxleWt();
 
     }
 }

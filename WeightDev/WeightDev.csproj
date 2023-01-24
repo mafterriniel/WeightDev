@@ -79,6 +79,9 @@
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -95,7 +98,9 @@
     <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\COMMReadType.cs" />
     <Compile Include="Enums\COMMEncoding.cs" />
-    <Compile Include="Enums\WDevice.cs" />
+    <Compile Include="Enums\WeighingInputEnum.cs" />
+    <Compile Include="Enums\WeighingModeEnum.cs" />
+    <Compile Include="Enums\WeighingDeviceEnum.cs" />
     <Compile Include="Events\WeightChangedEventArgs.cs" />
     <Compile Include="IndicatorEvents\GSE460V2.cs" />
     <Compile Include="IndicatorEvents\RINSTRUMR323.cs" />

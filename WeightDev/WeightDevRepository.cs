@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeightDev.Constants;
 using WeightDev.Enums;
@@ -17,19 +16,24 @@ namespace WeightDev
 {
     public partial class WeightDevRepository
     {
+        public WeightDevRepository()
+        {
+            //AxleWtAddedEvent = new EventHandler<AxleWtAddedEventArgs>();
+            ResetAxleWt();
+        }
+
         public static System.Threading.ManualResetEventSlim evt = new System.Threading.ManualResetEventSlim(false);
         public SerialPort COMM { get; set; }
         private static System.Net.Sockets.TcpClient IP { get; set; }
         private static System.Net.Sockets.NetworkStream IPStream { get; set; }
         public BackgroundWorker IPBgWorker { get; set; }
-
         public TextBox HandlerTextBox { get; set; }
 
         public static ObservableCollection<byte> ReceivedData;
 
         public decimal Sensitivity { get; set; }
 
-        private WDevice WD = WDevice.NONE;
+        private WeighingDeviceEnum WD = WeighingDeviceEnum.NONE;
         private ConnType CType = ConnType.COMM;
 
         #region PROPERTIES
@@ -53,6 +57,22 @@ namespace WeightDev
 
         public COMMReadType COMMReadType { get; set; }
         public string WeighingDevice { get; set; }
+
+        public WeighingModeEnum WeighingMode { get; set; }
+
+
+        private WeighingInputEnum _wInput;
+
+        public WeighingInputEnum WeighingInput
+        {
+            get => _wInput;
+            set
+            {
+                _wInput = value;
+            }
+        }
+
+
         public int ReadingInterval { get; set; }
         public string AccessPwd { get; set; }
         public decimal SimulationIncrement { get; set; }
@@ -91,41 +111,41 @@ namespace WeightDev
         private void setWeightDevSettings()
         {
             Enum.TryParse<ConnType>(ConnectionType, out CType);
-            Enum.TryParse<WDevice>(WeighingDevice, out WD);
+            Enum.TryParse<WeighingDeviceEnum>(WeighingDevice, out WD);
 
 
 
             switch (WD)
             {
-                case WDevice.NONE:
+                case WeighingDeviceEnum.NONE:
                     break;
-                case WDevice.GSE460:
+                case WeighingDeviceEnum.GSE460:
                     DataLength = 9;
                     EndCharacter = "\r";
                     ExtStartIndex = 0;
                     ExtLength = 9;
                     break;
-                case WDevice.GSE460V2:
+                case WeighingDeviceEnum.GSE460V2:
                     DataLength = 8;
                     EndCharacter = "\r";
                     ExtStartIndex = 0;
                     ExtLength = 8;
                     break;
-                case WDevice.TOLEDO:
+                case WeighingDeviceEnum.TOLEDO:
                     break;
-                case WDevice.RINSTRUMR323:
+                case WeighingDeviceEnum.RINSTRUMR323:
                     DataLength = 10;
                     EndCharacter = "\r";
                     CommNewLine = "";
                     break;
-                case WDevice.RINSTRUMR323V2:
+                case WeighingDeviceEnum.RINSTRUMR323V2:
                     DataLength = 17;
                     EndCharacter = "\u0002";
                     ExtStartIndex = 7;
                     ExtLength = 7;
                     CommNewLine = "\r";
                     break;
-                case WDevice.RINSTRUMR323V3:
+                case WeighingDeviceEnum.RINSTRUMR323V3:
                     DataLength = 13;
                     EndCharacter = "\u0002";
                     ExtStartIndex = 6;
@@ -135,7 +155,7 @@ namespace WeightDev
                     CommReadBufferSize = 20;
                     CommNewLine = "\u0003";
                     break;
-                case WDevice.RINSTRUMR323V4:
+                case WeighingDeviceEnum.RINSTRUMR323V4:
                     DataLength = 11;
                     EndCharacter = "\n";
                     ExtStartIndex = 2;
@@ -145,19 +165,19 @@ namespace WeightDev
                     CommReadBufferSize = 4;
                     CommNewLine = "\n";
                     break;
-                case WDevice.ZM201:
-                    DataLength =8;
+                case WeighingDeviceEnum.ZM201:
+                    DataLength = 8;
                     EndCharacter = "\n";
                     ExtStartIndex = 0;
                     ExtLength = 8;
                     break;
-                case WDevice.ZM405:
+                case WeighingDeviceEnum.ZM405:
                     DataLength = 7;
                     EndCharacter = "\n";
                     ExtStartIndex = 0;
                     ExtLength = 7;
                     break;
-                case WDevice.KELI_XK:
+                case WeighingDeviceEnum.KELI_XK:
                     //DataLength = 17;
                     //EndCharacter = "\r";
                     //ExtStartIndex = 0;
@@ -197,59 +217,59 @@ namespace WeightDev
                 #region WD
                 switch (WD)
                 {
-                    case WDevice.NONE:
+                    case WeighingDeviceEnum.NONE:
                         break;
-                    case WDevice.GSE460:
+                    case WeighingDeviceEnum.GSE460:
                         COMM.DataReceived -= COMM_GSE460_DataReceived;
                         COMM.DataReceived += COMM_GSE460_DataReceived;
                         COMM.ErrorReceived -= COMM_GSE460_ErrorReceived;
                         COMM.ErrorReceived += COMM_GSE460_ErrorReceived;
                         break;
-                    case WDevice.GSE460V2:
+                    case WeighingDeviceEnum.GSE460V2:
                         COMM.DataReceived -= COMM_GSE460V2_DataReceived;
                         COMM.DataReceived += COMM_GSE460V2_DataReceived;
                         COMM.ErrorReceived -= COMM_GSE460V2_ErrorReceived;
                         COMM.ErrorReceived += COMM_GSE460V2_ErrorReceived;
                         break;
-                    case WDevice.TOLEDO:
+                    case WeighingDeviceEnum.TOLEDO:
                         break;
-                    case WDevice.RINSTRUMR323:
+                    case WeighingDeviceEnum.RINSTRUMR323:
                         COMM.DataReceived -= COMM_RINSTRUMR323_DataReceived;
                         COMM.DataReceived += COMM_RINSTRUMR323_DataReceived;
                         COMM.ErrorReceived -= COMM_RINSTRUMR323_ErrorReceived;
                         COMM.ErrorReceived += COMM_RINSTRUMR323_ErrorReceived;
                         break;
-                    case WDevice.RINSTRUMR323V2:
+                    case WeighingDeviceEnum.RINSTRUMR323V2:
                         COMM.DataReceived -= COMM_RINSTRUMR323V2_DataReceived;
                         COMM.DataReceived += COMM_RINSTRUMR323V2_DataReceived;
                         COMM.ErrorReceived -= COMM_RINSTRUMR323V2_ErrorReceived;
                         COMM.ErrorReceived += COMM_RINSTRUMR323V2_ErrorReceived;
                         break;
-                    case WDevice.RINSTRUMR323V3:
+                    case WeighingDeviceEnum.RINSTRUMR323V3:
                         COMM.DataReceived -= COMM_RINSTRUMR323V3_DataReceived;
                         COMM.DataReceived += COMM_RINSTRUMR323V3_DataReceived;
                         COMM.ErrorReceived -= COMM_RINSTRUMR323V3_ErrorReceived;
                         COMM.ErrorReceived += COMM_RINSTRUMR323V3_ErrorReceived;
                         break;
-                    case WDevice.RINSTRUMR323V4:
+                    case WeighingDeviceEnum.RINSTRUMR323V4:
                         COMM.DataReceived -= COMM_RINSTRUMR323V4_DataReceived;
                         COMM.DataReceived += COMM_RINSTRUMR323V4_DataReceived;
                         COMM.ErrorReceived -= COMM_RINSTRUMR323V4_ErrorReceived;
                         COMM.ErrorReceived += COMM_RINSTRUMR323V4_ErrorReceived;
                         break;
-                    case WDevice.ZM201:
+                    case WeighingDeviceEnum.ZM201:
                         COMM.DataReceived -= COMM_ZM201_DataReceived;
                         COMM.DataReceived += COMM_ZM201_DataReceived;
                         COMM.ErrorReceived -= COMM_ZM201_ErrorReceived;
                         COMM.ErrorReceived += COMM_ZM201_ErrorReceived;
                         break;
-                    case WDevice.ZM405:
+                    case WeighingDeviceEnum.ZM405:
                         COMM.DataReceived -= COMM_ZM405_DataReceived;
                         COMM.DataReceived += COMM_ZM405_DataReceived;
                         COMM.ErrorReceived -= COMM_ZM405_ErrorReceived;
                         COMM.ErrorReceived += COMM_ZM405_ErrorReceived;
                         break;
-                    case WDevice.KELI_XK:
+                    case WeighingDeviceEnum.KELI_XK:
                         COMM.DataReceived -= COMM_KELI_XK3196E2_WIM_DataReceived;
                         COMM.DataReceived += COMM_KELI_XK3196E2_WIM_DataReceived;
                         COMM.ErrorReceived -= COMM_KELI_XK3196E2_WIM_ErrorReceived;
@@ -273,6 +293,8 @@ namespace WeightDev
 
         public void Start()
         {
+            ResetAxleWt();
+
             Started = false;
 
             if (AccessPwd != "mijochanel09041990") return;
@@ -298,15 +320,16 @@ namespace WeightDev
 
                     if (!String.IsNullOrEmpty(CommNewLine)) COMM.NewLine = CommNewLine;
 
-                    if (String.IsNullOrEmpty(CommParityReplace) == false )
+                    if (String.IsNullOrEmpty(CommParityReplace) == false)
                     {
                         byte[] pr = System.Text.Encoding.ASCII.GetBytes(CommParityReplace);
                         COMM.ParityReplace = pr[0];
-                    } else
+                    }
+                    else
                     {
 
                     }
-                   
+
 
                     switch (COMMEncoding)
                     {
@@ -409,7 +432,7 @@ namespace WeightDev
                 }
                 ReadingInterval = ReadingInterval == 0 ? 100 : ReadingInterval;
 
-              
+
             }
             catch (Exception ex)
             {
@@ -497,22 +520,22 @@ namespace WeightDev
             }
 
             var valid = true;
-            Enum.TryParse<WDevice>(WeighingDevice, out WD);
+            Enum.TryParse<WeighingDeviceEnum>(WeighingDevice, out WD);
 
-           
+
             switch (WD)
             {
-                case WDevice.ZM201:
+                case WeighingDeviceEnum.ZM201:
                     if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
                     break;
-                case WDevice.ZM405:
+                case WeighingDeviceEnum.ZM405:
                     if (str.IndexOf(EndCharacterCHAR) != DataLength - 1) valid = false;
                     break;
-                case WDevice.KELI_XK:
+                case WeighingDeviceEnum.KELI_XK:
                     if (str.IndexOf("\u0010") != DataLength - 1) valid = false;
                     break;
             }
-            
+
 
             if (str.Length < (ExtStartIndex + ExtLength))
             {
@@ -559,6 +582,9 @@ namespace WeightDev
             evt.Wait(500);
             evt.Set();
 
+            this.AxleWt_Added -= AxleWt_Added;
+            this.WeightChanged -= WeightChanged;
+
             if (CType == ConnType.COMM)
             {
                 if (!COMM.IsOpen) return;
@@ -567,24 +593,24 @@ namespace WeightDev
 
                 switch (WD)
                 {
-                    case WDevice.NONE:
-                    case WDevice.GSE460:
+                    case WeighingDeviceEnum.NONE:
+                    case WeighingDeviceEnum.GSE460:
                         COMM.DataReceived -= COMM_GSE460_DataReceived;
                         COMM.ErrorReceived -= COMM_GSE460_ErrorReceived;
                         break;
-                    case WDevice.GSE460V2:
+                    case WeighingDeviceEnum.GSE460V2:
                         COMM.DataReceived -= COMM_GSE460V2_DataReceived;
                         COMM.ErrorReceived -= COMM_GSE460V2_ErrorReceived;
                         break;
-                    case WDevice.RINSTRUMR323V2:
+                    case WeighingDeviceEnum.RINSTRUMR323V2:
                         COMM.DataReceived -= COMM_RINSTRUMR323V2_DataReceived;
                         COMM.ErrorReceived -= COMM_RINSTRUMR323V2_ErrorReceived;
                         break;
-                    case WDevice.ZM201:
+                    case WeighingDeviceEnum.ZM201:
                         COMM.DataReceived -= COMM_ZM201_DataReceived;
                         COMM.ErrorReceived -= COMM_ZM201_ErrorReceived;
                         break;
-                    case WDevice.ZM405:
+                    case WeighingDeviceEnum.ZM405:
                         COMM.DataReceived -= COMM_ZM405_DataReceived;
                         COMM.ErrorReceived -= COMM_ZM405_ErrorReceived;
                         break;
@@ -601,7 +627,7 @@ namespace WeightDev
                 CloseDown.Start();
                 //System.Threading.Thread.Sleep(6000)
 
-;
+                ;
             }
 
 
@@ -760,5 +786,91 @@ namespace WeightDev
                 GC.SuppressFinalize(obj);
             }
         }
+
+
+        private decimal maxWeight { get; set; }
+
+        public Dictionary<int, decimal> AxleWts { get; set; }
+            = new Dictionary<int, decimal>();
+
+        private decimal AxleTriggerWt { get; set; } = 100;
+
+        private decimal AxleCountLimt { get; set; } = 8;
+
+        public void ResetAxleWt()
+        {
+            maxWeight = 0;
+            AxleWts.Clear();
+        }
+
+        public event System.EventHandler<AxleWtAddedEventArgs> AxleWt_Added;
+
+        private bool isUpTrend;
+        private bool isDownTrend;
+        private bool zeroReached;
+        private List<decimal> lastWeights;
+        private int lastWeightMaxCount = 20;
+
+        public void ProcessAxleWt(decimal wt)
+        {
+            if (WeighingMode != WeighingModeEnum.AXLE) return;
+
+            if (AxleWts.Count >= AxleCountLimt) return;
+
+            // Set Axle Number
+            var axleNum = AxleWts.Count + 1;
+
+
+            // Store Last 20 Weight Movement
+            //if (lastWeights?.Count >= 20)
+            //{
+            //    // Check if DownTrend
+            //    decimal summed_nums = lastWeights.Sum();
+            //    decimal multiplied_data = 0;
+            //    var summed_idx = 0;
+            //    double squared_idx = 0;
+            //    for (var i = 0; i<=19;i++)
+            //    {
+            //        i += 1;
+            //        multiplied_data += i * lastWeights[i - 1];
+            //        summed_idx += i;
+            //        squared_idx += Math.Pow((double)i, 2d);
+            //    }
+
+            //    var numerator = (lastWeights.Count * multiplied_data) - (summed_nums * summed_idx);
+            //    var denominator = (lastWeights.Count * squared_idx) - (Math.Pow(summed_idx, 2));
+
+            //    var res = denominator != 0 ? ((double)numerator / denominator) : 0;
+            //    isDownTrend = res <= 0;
+
+            //    lastWeights.Clear();
+            //} else
+            //{
+            //    if (lastWeights == null) lastWeights = new List<decimal>();
+            //    lastWeights?.Add(wt);
+            //}
+
+            // Get The Max Weight
+            if (wt > maxWeight) maxWeight = wt;
+
+
+            if (isDownTrend)
+            {
+
+                var triggerWt = AxleWts.Count == 0 ? 0 : AxleTriggerWt;
+
+                if (wt <= AxleTriggerWt & maxWeight != 0)
+                {
+                    // check decreasing weight.
+                    // if currentwt is less than {AxleTriggerWtDiff} of last Wt store 
+                    AxleWts.Add(axleNum, wt);
+                    AxleWt_Added?.Invoke(this, new AxleWtAddedEventArgs(axleNum, maxWeight, DateTime.Now));
+                    maxWeight = 0;
+                }
+                isDownTrend = false;
+            }
+
+        }
+
     }
 }

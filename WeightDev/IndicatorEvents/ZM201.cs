@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
 {
-   public  partial class WeightDevRepository
+    public partial class WeightDevRepository
     {
         #region ZM201
-        private  void COMM_ZM201_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        private void COMM_ZM201_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
             switch (e.EventType)
             {
@@ -28,14 +24,18 @@ namespace WeightDev
 
             }
         }
+        private protected decimal previousWt = -1000;
         private void COMM_ZM201_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-    
+
             switch (e.EventType)
             {
                 case SerialData.Chars:
                     try
                     {
+
+                        if (WeighingInput == Enums.WeighingInputEnum.MANUAL) return;
+
                         var signal = COMM.ReadLine();
                         //byte[] bytes = Encoding.ASCII.GetBytes(signal);
 
@@ -46,7 +46,19 @@ namespace WeightDev
 
                         var filtered = signal.Replace("\r", "");
                         filtered = filtered.Replace(" ", "");
-                        SetValue(signal);
+
+                        decimal.TryParse(signal, out var wt);
+
+                        
+                            if (previousWt != wt)
+                        {
+
+                            previousWt = wt;
+                            ProcessAxleWt(wt);
+                        }
+                       
+                            SetValue(wt.ToString());
+                      
                         //;
                         COMM.DiscardInBuffer();
                         COMM.DiscardOutBuffer();

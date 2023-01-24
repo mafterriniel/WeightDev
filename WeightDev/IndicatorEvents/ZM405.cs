@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeightDev.Constants;
 
 namespace WeightDev
 {
-   public  partial class WeightDevRepository
+    public partial class WeightDevRepository
     {
         #region ZM405V2
-        private  void COMM_ZM405_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        private void COMM_ZM405_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
             switch (e.EventType)
             {
@@ -30,7 +26,7 @@ namespace WeightDev
         }
         private void COMM_ZM405_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-    
+
             switch (e.EventType)
             {
                 case SerialData.Chars:
