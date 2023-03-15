@@ -126,6 +126,7 @@ namespace WeightDev
 
             weightDevRepo.AccessPwd = AccessPwd;
             weightDevRepo.WeighingDevice = WeighingDevice;
+            weightDevRepo.WeighingMode = WeighingMode;
             weightDevRepo.ConnectionType = ConnectionType;
             weightDevRepo.CommPortName = CommPortName;
             weightDevRepo.CommBaudRate = CommBaudRate;

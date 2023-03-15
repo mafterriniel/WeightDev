@@ -16,10 +16,15 @@ namespace WeightDev
 {
     public partial class WeightDevRepository
     {
+
+
         public WeightDevRepository()
         {
-            //AxleWtAddedEvent = new EventHandler<AxleWtAddedEventArgs>();
-            ResetAxleWt();
+
+            if (WeighingMode == WeighingModeEnum.AXLE)
+            {
+                ResetAxleWt();
+            }
         }
 
         public static System.Threading.ManualResetEventSlim evt = new System.Threading.ManualResetEventSlim(false);
@@ -293,7 +298,10 @@ namespace WeightDev
 
         public void Start()
         {
-            ResetAxleWt();
+            if (WeighingMode == WeighingModeEnum.AXLE)
+            {
+                ResetAxleWt();
+            }
 
             Started = false;
 
@@ -795,6 +803,8 @@ namespace WeightDev
 
         private decimal AxleTriggerWt { get; set; } = 100;
 
+        public decimal AxleBaseWt { get; set; } = 300;
+
         private decimal AxleCountLimt { get; set; } = 8;
 
         public void ResetAxleWt()
@@ -853,22 +863,33 @@ namespace WeightDev
             // Get The Max Weight
             if (wt > maxWeight) maxWeight = wt;
 
+            //if (isDownTrend)
+            //{
 
-            if (isDownTrend)
+            //    var triggerWt = AxleWts.Count == 0 ? 0 : AxleTriggerWt;
+
+            //    if (wt <= AxleTriggerWt & maxWeight != 0)
+            //    {
+            //        // check decreasing weight.
+            //        // if currentwt is less than {AxleTriggerWtDiff} of last Wt store 
+            //        AxleWts.Add(axleNum, wt);
+            //        AxleWt_Added?.Invoke(this, new AxleWtAddedEventArgs(axleNum, maxWeight, DateTime.Now));
+            //        maxWeight = 0;
+            //    }
+            //    isDownTrend = false;
+            //}
+
+            var triggerWt = AxleWts.Count == 0 ? 0 : AxleTriggerWt;
+
+            if (wt <= AxleTriggerWt & maxWeight > AxleBaseWt)
             {
-
-                var triggerWt = AxleWts.Count == 0 ? 0 : AxleTriggerWt;
-
-                if (wt <= AxleTriggerWt & maxWeight != 0)
-                {
-                    // check decreasing weight.
-                    // if currentwt is less than {AxleTriggerWtDiff} of last Wt store 
-                    AxleWts.Add(axleNum, wt);
-                    AxleWt_Added?.Invoke(this, new AxleWtAddedEventArgs(axleNum, maxWeight, DateTime.Now));
-                    maxWeight = 0;
-                }
-                isDownTrend = false;
+                // check decreasing weight.
+                // if currentwt is less than {AxleTriggerWtDiff} of last Wt store 
+                AxleWts.Add(axleNum, maxWeight);
+                AxleWt_Added?.Invoke(this, new AxleWtAddedEventArgs(axleNum, maxWeight, DateTime.Now));
+                maxWeight = 0;
             }
+            isDownTrend = false;
 
         }
 

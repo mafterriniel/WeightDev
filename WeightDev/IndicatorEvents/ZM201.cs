@@ -47,17 +47,20 @@ namespace WeightDev
                         var filtered = signal.Replace("\r", "");
                         filtered = filtered.Replace(" ", "");
 
+
                         decimal.TryParse(signal, out var wt);
 
-                        
-                            if (previousWt != wt)
+                        if (WeighingMode == Enums.WeighingModeEnum.AXLE)
                         {
+                            if (previousWt != wt)
+                            {
 
-                            previousWt = wt;
-                            ProcessAxleWt(wt);
+                                previousWt = wt;
+                                ProcessAxleWt(wt);
+                            }
                         }
-                       
-                            SetValue(wt.ToString());
+
+                        SetValue(wt.ToString());
                       
                         //;
                         COMM.DiscardInBuffer();
