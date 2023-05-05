@@ -203,9 +203,9 @@ namespace WeightDev
 
         protected override void OnTextChanged(EventArgs e)
         {
-            if (WeighingInput == WeighingInputEnum.AUTO) 
+            //if (WeighingInput == WeighingInputEnum.AUTO) 
             base.OnTextChanged(e);
-
+   
 
             if (WeighingMode == WeighingModeEnum.AXLE)
             {

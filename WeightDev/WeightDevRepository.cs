@@ -696,6 +696,8 @@ namespace WeightDev
 
             if (HandlerTextBox == null) return;
 
+            if (WeighingInput == WeighingInputEnum.MANUAL) return;
+
             var cValue = 0M;
             decimal.TryParse(HandlerTextBox.Text, out cValue);
 
