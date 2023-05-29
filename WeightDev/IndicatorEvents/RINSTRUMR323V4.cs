@@ -45,7 +45,8 @@ namespace WeightDev
                         filtered = filtered.Replace("G", "");
                         filtered = filtered.Replace("K", "");
                         filtered = filtered.Replace("M", "");
-                        filtered = filtered.Replace("N", "");
+                        filtered = filtered.Replace("N", "");      
+
                         filtered = filtered.Replace(" ", "");
 
                         var isNumeric = int.TryParse(filtered, out int intFilter);
