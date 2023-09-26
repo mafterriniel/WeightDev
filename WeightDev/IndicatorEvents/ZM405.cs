@@ -42,7 +42,10 @@ namespace WeightDev
 
                         var filtered = signal.Replace("\r", "");
                         filtered = filtered.Replace(" ", "");
-                        SetValue(signal);
+                        filtered = filtered.Replace("K", "");
+                        filtered = filtered.Replace("G", "");
+
+                        SetValue(filtered);
                         //;
                         COMM.DiscardInBuffer();
                         COMM.DiscardOutBuffer();
